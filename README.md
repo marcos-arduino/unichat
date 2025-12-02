@@ -92,11 +92,12 @@ unichat/
 ### Backend
 - **FastAPI**: Framework web Python
 - **SQLAlchemy**: ORM base de datos
-- **PostgreSQL**: Base de datos principal
+- **PostgreSQL**: Base de datos principal con soporte JSONB
 - **Redis**: Cache y sesiones
 - **WebSocket**: Comunicación en tiempo real
 - **JWT**: Autenticación
 - **Pydantic**: Validación datos
+- **WhatsApp Business API**: Integración mensajería
 
 ### Frontend
 - **React**: Framework UI
@@ -106,20 +107,31 @@ unichat/
 - **Axios**: HTTP client
 - **WebSocket API**: Conexión real-time
 
-## Flujo de datos
+## Flujo de datos con WhatsApp Integration
 
-1. **Autenticación**: Login → JWT token → Almacenamiento local
-2. **Conexión WebSocket**: Conectar con token → Unirse a salas
-3. **Mensajes**: Enviar → Backend → Broadcast a usuarios sala
-4. **Estado**: Redux/Zustand sincronizado con WebSocket
+```
+CLIENTE (ALUMNO) → WhatsApp Business API → Webhook FastAPI → PostgreSQL → WebSocket → Profesores (React)
+                      ↑
+              Respuesta Profesor → FastAPI → WhatsApp API → CLIENTE
+```
+
+1. **Entrada WhatsApp**: Webhook recibe mensaje → Guarda en DB → Broadcast WebSocket
+2. **Asignación**: Sistema asigna conversación a profesor disponible
+3. **Respuesta**: Profesor responde desde web → Backend envía a WhatsApp
+4. **Estados**: Sincronización de delivered/read desde webhooks WhatsApp
 
 ## Características principales
 
 - ✅ Chat en tiempo real con WebSocket
-- ✅ Múltiples salas de chat
-- ✅ Autenticación de usuarios
-- ✅ Historial de mensajes
+- ✅ Integración WhatsApp Business API
+- ✅ Sistema de atención centralizada
+- ✅ Asignación automática de conversaciones
+- ✅ Múltiples profesores/administradores
+- ✅ Historial completo de mensajes
+- ✅ Estados de entrega WhatsApp (sent/delivered/read)
+- ✅ Soporte multimedia (imágenes, audio, video)
+- ✅ Autenticación de usuarios con roles
 - ✅ Estados de usuario (online/offline)
-- ✅ Sistema de notificaciones
+- ✅ Sistema de notificaciones en tiempo real
 - ✅ Respuestas a mensajes
 - ✅ Reacciones emoji
