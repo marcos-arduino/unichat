@@ -1,17 +1,33 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .config import settings
+from .database import Base, engine
 
-app = FastAPI()
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
-# CORS para permitir que React llame a la API
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+)
+
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/api/hello")
+@app.get("/")
 def read_root():
-    return {"message": "Hola desde FastAPI"}
+    return {"message": "¡Bienvenido a UniChat API!"}
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "ok",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION
+    }
